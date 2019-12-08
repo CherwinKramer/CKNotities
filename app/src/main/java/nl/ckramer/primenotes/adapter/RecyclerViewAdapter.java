@@ -1,6 +1,7 @@
 package nl.ckramer.primenotes.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +23,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private ArrayList<String> mDescriptions = new ArrayList<>();
     private Context mContext;
 
-    public RecyclerViewAdapter(ArrayList<String> titles, ArrayList<String> descriptions, Context context)  {
+    public RecyclerViewAdapter(Context context, ArrayList<String> titles, ArrayList<String> descriptions)  {
         mTitles = titles;
         mDescriptions = descriptions;
         mContext = context;
@@ -30,15 +31,18 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        Log.d(TAG, "onCreateViewHolder");
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_listitem, parent, false);
         ViewHolder viewHolder = new ViewHolder(view);
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.title.setText(mTitles.get(position));
+    public void onBindViewHolder(ViewHolder holder, final int position) {
+
+        String title = mTitles.get(position);
+        holder.title.setText(title);
         holder.description.setText(mDescriptions.get(position));
         holder.parentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,10 +61,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         TextView title;
         TextView description;
         RelativeLayout parentLayout;
+        
         public ViewHolder(View itemView){
             super(itemView);
-            title = itemView.findViewById(R.id.title);
-            description = itemView.findViewById(R.id.itemDescription);
+            title = itemView.findViewById(R.id.item_title);
+            description = itemView.findViewById(R.id.item_description);
             parentLayout = itemView.findViewById(R.id.parent_layout);
         }
     }

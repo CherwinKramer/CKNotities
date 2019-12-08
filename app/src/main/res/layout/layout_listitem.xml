@@ -1,25 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="15dp"
     android:id="@+id/parent_layout">
 
     <TextView
-        android:id="@+id/itemTitle"
-        android:layout_alignTop="@id/itemTitle"
+        android:id="@+id/item_title"
+        android:layout_alignTop="@id/item_title"
         android:layout_width="match_parent"
         android:layout_height="25dp"
         android:text="Item Title"
-        android:textSize="17dp"
-        android:textColor="#000"/>
+        android:textSize="17dp"/>
 
     <TextView
-        android:id="@+id/itemDescription"
-        android:layout_below="@id/itemTitle"
-        android:layout_width="match_parent"
-        android:layout_height="55dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/item_description"
+        android:layout_below="@id/item_title"
         android:text="Item Description"
-        android:textSize="17dp"
-        android:textColor="#000"/>
+        android:textSize="17dp"/>
 </RelativeLayout>
