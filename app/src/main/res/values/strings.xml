@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">PrimeNotes</string>
 
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="item_deleted_unsuccesful">Item couldn\'t be deleted</string>
+    <string name="item_deleted_succesful">Item %1$d has been succesfully deleted</string>
+    <string name="warning">Warning</string>
+    <string name="delete_confirmation">Are you sure you want to delete this?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

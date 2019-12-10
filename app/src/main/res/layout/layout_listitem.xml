@@ -5,7 +5,8 @@
     android:layout_height="wrap_content"
     android:padding="15dp"
     android:id="@+id/parent_layout"
-    android:background="?android:attr/selectableItemBackground">
+    android:background="?android:attr/selectableItemBackground"
+    android:longClickable="true">
 
     <TextView
         android:id="@+id/item_title"
@@ -22,4 +23,13 @@
         android:layout_below="@id/item_title"
         android:text="Item Description"
         android:textSize="17dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/item_id"
+        android:layout_below="@id/item_description"
+        android:text="Item Id"
+        android:textSize="17dp"
+        android:visibility="gone"/>
 </RelativeLayout>
