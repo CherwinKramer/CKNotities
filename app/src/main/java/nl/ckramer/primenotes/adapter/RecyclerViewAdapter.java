@@ -1,6 +1,7 @@
 package nl.ckramer.primenotes.adapter;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,13 +15,13 @@ import java.util.ArrayList;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import nl.ckramer.primenotes.R;
+import nl.ckramer.primenotes.entity.Note;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>{
 
     private static final String TAG = "RecyclerViewAdapter";
 
-    private ArrayList<String> mTitles = new ArrayList<>();
-    private ArrayList<String> mDescriptions = new ArrayList<>();
+    private ArrayList<Note> mNotes = new ArrayList<>();
     private Context mContext;
 
     // Define listener member variable
@@ -28,16 +29,28 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     // Define the listener interface
     public interface OnItemClickListener {
         void onItemClick(View itemView, int position);
+
+        void onItemLongClick(View itemView, int position);
     }
     // Define the method that allows the parent activity or fragment to define the listener
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.listener = listener;
     }
 
-    public RecyclerViewAdapter(Context context, ArrayList<String> titles, ArrayList<String> descriptions)  {
-        mTitles = titles;
-        mDescriptions = descriptions;
-        mContext = context;
+    public RecyclerViewAdapter(Context context, ArrayList<Note> notes)  {
+        this.mNotes = notes;
+        this.mContext = context;
+    }
+
+    public boolean removeDataFromDataSet(int position){
+        try {
+            mNotes.remove(position);
+            notifyItemRemoved(position);
+            notifyItemRangeChanged(position, mNotes.size());
+            return true;
+        } catch (Exception e){
+            return false;
+        }
     }
 
     @NonNull
@@ -51,19 +64,17 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-
-        String title = mTitles.get(position);
-        holder.title.setText(title);
-        holder.description.setText(mDescriptions.get(position));
-        
+        Note note = mNotes.get(position);
+        holder.title.setText(note.getTitle());
+        holder.description.setText(note.getDescription());
     }
 
     @Override
     public int getItemCount() {
-        return mTitles.size();
+        return mNotes.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class ViewHolder extends RecyclerView.ViewHolder{
         TextView title;
         TextView description;
         RelativeLayout parentLayout;
@@ -86,14 +97,21 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                     }
                 }
             });
-        }
 
-        @Override
-        public void onClick(View v) {
-            int position = getAdapterPosition();
-            if (position != RecyclerView.NO_POSITION) {
-                Toast.makeText(mContext, title.getText(), Toast.LENGTH_SHORT).show();
-            }
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    // Triggers click upwards to the adapter on click
+                    if (listener != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            listener.onItemLongClick(itemView, position);
+                        }
+                    }
+                    return true;
+                }
+
+            });
         }
     }
 }
