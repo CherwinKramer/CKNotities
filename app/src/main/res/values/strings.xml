@@ -2,6 +2,8 @@
     <string name="app_name">CKNotities</string>
     <string name="title">Titel</string>
     <string name="description">Beschrijving</string>
+    <string name="created">Gemaakt op</string>
+
     <string name="validation_error">This field needs to be filled</string>
     <string name="item_deletion_undo">Ongedaan maken</string>
     <string name="item_deleted_unsuccesful">Item couldn\'t be deleted</string>
