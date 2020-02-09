@@ -88,7 +88,6 @@ public class MainActivity extends AppCompatActivity implements
                 .setPositiveButton(R.string.yes, (dialog, whichButton) -> {
                     mNotes.remove(position);
                     mNoteAdapter.notifyItemRemoved(position);
-                    Material
                     Snackbar snackbar = Snackbar.make(findViewById(R.id.activity_main), "Notitie verwijderd:  " + selectedNote.getTitle(), Snackbar.LENGTH_LONG);
                     snackbar.setAction(R.string.item_deletion_undo, v -> {
                         mNotes.add(position, selectedNote);
