@@ -8,8 +8,10 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -44,6 +46,8 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder>{
         Note note = mNotes.get(position);
         holder.title.setText(note.getTitle());
         holder.description.setText(note.getDescription());
+        SimpleDateFormat sdf = new SimpleDateFormat("d MMMM HH:mm", Locale.getDefault());
+        holder.created.setText(sdf.format(note.getCreatedDate()));
     }
 
     @Override
@@ -52,13 +56,14 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder>{
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
-        TextView title, description;
+        TextView title, description, created;
         OnNoteClickListener mOnNoteClickListener;
         
         public ViewHolder(View v, OnNoteClickListener onNoteClickListener, OnNoteLongClickListener onNoteLongClickListener){
             super(v);
             title = v.findViewById(R.id.item_title);
             description = v.findViewById(R.id.item_description);
+            created = v.findViewById(R.id.item_created);
 
             mOnNoteLongClickListener = onNoteLongClickListener;
             mOnNoteClickListener = onNoteClickListener;
