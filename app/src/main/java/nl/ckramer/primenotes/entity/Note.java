@@ -4,18 +4,19 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Date;
 
-@DatabaseTable(tableName = "note")
+@DatabaseTable(tableName = "notes")
 public class Note implements Serializable {
 
     @DatabaseField(generatedId = true)
     private Long id;
 
-    @DatabaseField(index = true)
+    @DatabaseField(canBeNull = false)
     private String title;
 
-    @DatabaseField
+    @DatabaseField(canBeNull = false)
     private String description;
 
     @DatabaseField
