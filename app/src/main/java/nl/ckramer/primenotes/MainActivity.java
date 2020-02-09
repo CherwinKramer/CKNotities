@@ -2,6 +2,7 @@ package nl.ckramer.primenotes;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,19 +13,24 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import nl.ckramer.primenotes.adapter.RecyclerViewAdapter;
+import nl.ckramer.primenotes.adapter.NoteAdapter;
 import nl.ckramer.primenotes.entity.Note;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NoteAdapter.OnNoteClickListener{
+
     private static final String TAG = "MainActivity";
+    Context mContext;
+    List<Note> mNotes = new ArrayList<>();
 
-    private Context mContext;
-    private ArrayList<Note> mNotes = new ArrayList<>();
+    RecyclerView recyclerView;
+    RecyclerView.Adapter mNoteAdapter;
+    RecyclerView.LayoutManager layoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,36 +62,27 @@ public class MainActivity extends AppCompatActivity {
     }
     private void initRecyclerView(){
         Log.d(TAG, "initRecyclerView: preparing recycler view.");
-        RecyclerView recyclerView = findViewById(R.id.recycler_view);
-        RecyclerViewAdapter adapter = new RecyclerViewAdapter(mContext, mNotes);
-        adapter.setOnItemClickListener(new RecyclerViewAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                String text = mNotes.get(position).getTitle();
-                Toast.makeText(MainActivity.this, text + " was clicked!", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onItemLongClick(View itemView, int position) {
-                new AlertDialog.Builder(mContext)
-                    .setTitle(mNotes.get(position).getTitle())
-                    .setMessage(R.string.delete_confirmation)
-                    .setIcon(android.R.drawable.ic_delete)
-                    .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int whichButton) {
-                            if(adapter.removeDataFromDataSet(position)) {
-                                Toast.makeText(mContext, getString(R.string.item_deleted_succesful, position), Toast.LENGTH_SHORT).show();
-                            } else {
-                                Toast.makeText(mContext, R.string.item_deleted_unsuccesful, Toast.LENGTH_SHORT).show();
-                            }
-                        }})
-                    .setNegativeButton(R.string.no, null).show();
-            }
-        });
-
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView = findViewById(R.id.recycler_view);
+        recyclerView.setHasFixedSize(true);
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        mNoteAdapter = new NoteAdapter(mNotes, this);
+        recyclerView.setAdapter(mNoteAdapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
+    }
+
+    @Override
+    public void onNoteClick(int position) {
+        Log.d(TAG, "onNoteClick: OnNoteClick has been called!");
+        Toast.makeText(this, "Selected note: " + mNotes.get(position).getTitle(), Toast.LENGTH_SHORT).show();
+//        Intent intent = new Intent(this, NoteItemActivity.class);
+//        intent.putExtra("noteRequest", mNoteRequestList.get(position));
+//        startActivity(intent);
+    }
+
+    private void deleteNote(Note note) {
+        mNotes.remove(note);
+        mNoteAdapter.notifyDataSetChanged();
     }
 }
