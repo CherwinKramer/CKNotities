@@ -16,13 +16,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import nl.ckramer.primenotes.adapter.NoteAdapter;
 import nl.ckramer.primenotes.entity.Note;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements NoteAdapter.OnNoteClickListener{
+public class MainActivity extends AppCompatActivity implements
+        NoteAdapter.OnNoteClickListener,
+        NoteAdapter.OnNoteLongClickListener{
 
     private static final String TAG = "MainActivity";
     Context mContext;
@@ -61,12 +64,11 @@ public class MainActivity extends AppCompatActivity implements NoteAdapter.OnNot
         initRecyclerView();
     }
     private void initRecyclerView(){
-        Log.d(TAG, "initRecyclerView: preparing recycler view.");
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        mNoteAdapter = new NoteAdapter(mNotes, this);
+        mNoteAdapter = new NoteAdapter(mNotes, this, this);
         recyclerView.setAdapter(mNoteAdapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
@@ -74,11 +76,27 @@ public class MainActivity extends AppCompatActivity implements NoteAdapter.OnNot
 
     @Override
     public void onNoteClick(int position) {
-        Log.d(TAG, "onNoteClick: OnNoteClick has been called!");
-        Toast.makeText(this, "Selected note: " + mNotes.get(position).getTitle(), Toast.LENGTH_SHORT).show();
-//        Intent intent = new Intent(this, NoteItemActivity.class);
-//        intent.putExtra("noteRequest", mNoteRequestList.get(position));
-//        startActivity(intent);
+        Toast.makeText(this, "Single clicked note: " + mNotes.get(position).getTitle(), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onNoteLongClick(int position) {
+        Note selectedNote = mNotes.get(position);
+        new MaterialAlertDialogBuilder(mContext)
+                .setTitle(mNotes.get(position).getTitle())
+                .setMessage(R.string.delete_confirmation)
+                .setPositiveButton(R.string.yes, (dialog, whichButton) -> {
+                    mNotes.remove(position);
+                    mNoteAdapter.notifyItemRemoved(position);
+                    Material
+                    Snackbar snackbar = Snackbar.make(findViewById(R.id.activity_main), "Notitie verwijderd:  " + selectedNote.getTitle(), Snackbar.LENGTH_LONG);
+                    snackbar.setAction(R.string.item_deletion_undo, v -> {
+                        mNotes.add(position, selectedNote);
+                        mNoteAdapter.notifyItemInserted(position);
+                    });
+                    snackbar.show();
+                })
+                .setNegativeButton(R.string.no, null).show();
     }
 
     private void deleteNote(Note note) {

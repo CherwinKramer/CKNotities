@@ -23,10 +23,12 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder>{
     private Context mContext;
 
     private OnNoteClickListener mOnNoteClickListener;
+    private OnNoteLongClickListener mOnNoteLongClickListener;
 
-    public NoteAdapter(List<Note> notes, OnNoteClickListener onNoteClickListener)  {
+    public NoteAdapter(List<Note> notes, OnNoteClickListener onNoteClickListener, OnNoteLongClickListener onNoteLongClickListener)  {
         this.mNotes = notes;
         this.mOnNoteClickListener = onNoteClickListener;
+        this.mOnNoteLongClickListener = onNoteLongClickListener;
     }
 
     @NonNull
@@ -34,7 +36,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder>{
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         mContext = parent.getContext();
         View view = LayoutInflater.from(mContext).inflate(R.layout.layout_listitem, parent, false);
-        return new ViewHolder(view, mOnNoteClickListener);
+        return new ViewHolder(view, mOnNoteClickListener, mOnNoteLongClickListener);
     }
 
     @Override
@@ -49,32 +51,19 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder>{
         return mNotes.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
         TextView title, description;
         OnNoteClickListener mOnNoteClickListener;
         
-        public ViewHolder(View v, OnNoteClickListener onNoteClickListener){
+        public ViewHolder(View v, OnNoteClickListener onNoteClickListener, OnNoteLongClickListener onNoteLongClickListener){
             super(v);
             title = v.findViewById(R.id.item_title);
             description = v.findViewById(R.id.item_description);
 
+            mOnNoteLongClickListener = onNoteLongClickListener;
             mOnNoteClickListener = onNoteClickListener;
             itemView.setOnClickListener(this);
-
-//            itemView.setOnLongClickListener(new View.OnLongClickListener() {
-//                @Override
-//                public boolean onLongClick(View v) {
-//                    // Triggers click upwards to the adapter on click
-//                    if (listener != null) {
-//                        int position = getAdapterPosition();
-//                        if (position != RecyclerView.NO_POSITION) {
-//                            listener.onItemLongClick(itemView, position);
-//                        }
-//                    }
-//                    return true;
-//                }
-//
-//            });
+            itemView.setOnLongClickListener(this);
         }
 
         @Override
@@ -82,10 +71,21 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder>{
             Log.d(TAG, "onClick: " + getAdapterPosition());
             mOnNoteClickListener.onNoteClick(getAdapterPosition());
         }
+
+        @Override
+        public boolean onLongClick(View v) {
+            Log.d(TAG, "onLongClick: " + getAdapterPosition());
+            mOnNoteLongClickListener.onNoteLongClick(getAdapterPosition());
+            return true;
+        }
     }
 
     public interface OnNoteClickListener{
         void onNoteClick(int position);
+    }
+
+    public interface OnNoteLongClickListener {
+        void onNoteLongClick(int position);
     }
 
 //    public boolean removeDataFromDataSet(int position){

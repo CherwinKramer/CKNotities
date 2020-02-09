@@ -8,16 +8,14 @@ import android.os.Handler;
 
 public class SplashActivity extends AppCompatActivity {
 
-    private Long splashTime = 250L;
+    private Long splashTime = 100L;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        new Handler().postDelayed (() -> {
-            goToMainActivity();
-        }, splashTime);
+        new Handler().postDelayed (() -> goToMainActivity(), splashTime);
     }
 
     private void goToMainActivity(){
