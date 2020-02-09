@@ -5,8 +5,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -21,6 +24,7 @@ import nl.ckramer.primenotes.helper.DBHelper;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputEditText;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -44,25 +48,78 @@ public class MainActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         mContext = this;
-        FloatingActionButton fab = findViewById(R.id.floating_action_button);
-        fab.setOnClickListener(view ->
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null)
-                        .show());
-
         dbHelper = new DBHelper(this);
         try {
-            dbHelper.save(new Note("Title item " + dbHelper.getDao(Note.class).countOf(), "Size of items is showed in title"));
             mNotes = dbHelper.getAll();
         } catch (SQLException e){
             Log.e(TAG, "initListItems: error occurred", e);
         }
 
         initRecyclerView();
+        FloatingActionButton fab = findViewById(R.id.floating_action_button);
+        fab.setOnClickListener(view -> initializeActionButton());
     }
 
-    private void initRecyclerView(){
+    private void initializeActionButton() {
+        LayoutInflater li = LayoutInflater.from(mContext);
+        final View promptView = li.inflate(R.layout.note_prompt, null);
+
+        TextInputEditText title = promptView.findViewById(R.id.editTitle);
+        TextInputEditText description = promptView.findViewById(R.id.editDescription);
+
+        MaterialAlertDialogBuilder alertDialogBuilder = new MaterialAlertDialogBuilder(mContext)
+                .setTitle("Notitie aanmaken")
+                .setView(promptView)
+                .setCancelable(false)
+                .setPositiveButton("Opslaan", (dialog, id) -> { })
+                .setNegativeButton("Annuleren",
+                        (dialog, id) -> {
+                            dialog.cancel();
+                        });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+
+        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            if(validateNoteFields(title, description)){
+                try {
+                    Note savedNote = dbHelper.save(new Note(title.getText().toString(), description.getText().toString()));
+                    mNotes.add(savedNote);
+                    mNoteAdapter.notifyDataSetChanged();
+                    alertDialog.dismiss();
+                } catch (SQLException e){
+                    Log.e(TAG, "initializeActionButton: couldn't save note..", e);
+                }
+            } else {
+                Log.d(TAG, "initializeActionButton: VALIDATION UNSUCCESSFULL");
+            }
+        });
+
+    }
+
+    private boolean validateNoteFields(TextInputEditText title, TextInputEditText description) {
+
+        boolean success = true;
+        if(TextUtils.isEmpty(title.getText())){
+            title.setError(mContext.getResources().getString(R.string.validation_error));
+            title.requestFocus();
+            success = false;
+        } else {
+            title.setError(null);
+        }
+
+        if(TextUtils.isEmpty(description.getText())){
+            description.setError(mContext.getResources().getString(R.string.validation_error));
+            description.requestFocus();
+            success = false;
+        } else {
+            description.setError(null);
+        }
+        return success;
+    }
+
+    private void initRecyclerView() {
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
